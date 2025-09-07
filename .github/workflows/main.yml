@@ -22,6 +22,9 @@ jobs:
         
       - name: Create ZIP deployment package
         run: zip -r ${{ env.DEPLOY_PACKAGE_NAME }} ./ -x *.git*
+
+      - name: Upload artifact name for later
+        run: echo "DEPLOY_PACKAGE_NAME=flask_app_${{ github.sha }}.zip" >> $GITHUB_ENV
         
       - name: Configure AWS Credentials 
         uses: aws-actions/configure-aws-credentials@v1
@@ -48,9 +51,10 @@ jobs:
           run : |
             aws elasticbeanstalk create-application-version \
             --application-name ${{ env.EB_APPLICATION_NAME }} \
-            --source-bundle S3Bucket="${{ env.EB_PACKAGE_S3_BUCKET_NAME }}",S3Key="${{ env.DEPLOY_PACKAGE_NAME }}" \
+            --source-bundle S3Bucket="${{ env.EB_PACKAGE_S3_BUCKETNAME }}",S3Key="${{ env.DEPLOY_PACKAGE_NAME }}" \
             --version-label "Ver-${{ github.sha }}" \
-            --description "CoimmitSHA-${{ github.sha }}"
+            --description "CommitSHA-${{ github.sha }}"
+
             
         - name: Deploy ne ElasticBeanstalk Application Version
           run: aws elasticbeanstalk update-enviropment --enviropment-name ${{ env.EB_ENVIROPMENT_NAME }} --version.label "Ver-${{ github.sha }}"
