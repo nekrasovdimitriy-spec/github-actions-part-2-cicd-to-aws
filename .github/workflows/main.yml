@@ -38,6 +38,7 @@ jobs:
         run: echo "CI Pipeline part Finished succesfully"
   my_cd_part:
     runs-on: ubuntu-latest
+    needs: [my_ci_part]
 
     steps:
         - name: Configure AWS Credentials 
